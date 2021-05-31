@@ -2,6 +2,10 @@
 
 This script sends email alerts (using Google SMTP server) when vaccination appointments are available on Doctolib.
 
+My modification tries to change and expand the script to handle german doctolib-servers (done), look for all sorts of vaccination appointments (not only BioNTech, done), generate a link to the appointment page (doing) and (maybe) search for centers that offer appointments for first-time visitors (todo).
+
+*The following is unchanged from the original repository:*
+
 ## Prerequisites
  
 - Python 3
