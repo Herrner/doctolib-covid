@@ -44,5 +44,4 @@ Hausarztpraxis St. Pauli: bietet keine entsprechenden Impfungen an
 Herr Dr. med. Peter Kühnelt: bietet keine entsprechenden Impfungen an
 Hausarzt Forum Winterhude: bietet keine entsprechenden Impfungen an
 Nächster Versuch in 5 Minuten
-
 ```
