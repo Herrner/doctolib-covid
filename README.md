@@ -6,6 +6,7 @@ My modification lets you select the desired vaccine (from the list in vaccines.t
 Doctolib-Servers and constantly retries to find appointments.  
 The list of centers still has to be created by hand - the example shows centers that accept first-time visitors for 
 vaccination in Hamburg.
+When finding an vaccination appointment, the script returns an URL that's not very helpful at the moment...
 
 ## Prerequisites
  
