@@ -28,6 +28,7 @@ def checkVaccine(motive, vaccines):
 
 def checkAppointments(vaccines):
     for center in centers:
+        nb_availabilities = 0
         response = requests.get(f"https://www.doctolib.de/booking/{center}.json")
         data = response.json()["data"]
         bookingurl =  (f"https://www.doctolib.de/booking/{center}")
