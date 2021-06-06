@@ -27,6 +27,7 @@ def checkVaccine(motive, vaccines):
 
 
 def checkAppointments(vaccines):
+    appointments_exist = False
     for center in centers:
         nb_availabilities = 0
         response = requests.get(f"https://www.doctolib.de/booking/{center}.json")
@@ -39,6 +40,8 @@ def checkAppointments(vaccines):
         if not visit_motives:
             click.echo(click.style(f"{data['profile']['name_with_title']}: bietet keine entsprechenden Impfungen an", fg='red'))
             continue
+        else:
+            appointments_exist = True
 
         places = [place for place in data["places"]]
         if not places:
@@ -95,6 +98,7 @@ def checkAppointments(vaccines):
                         server.login(SENDER_EMAIL, SENDER_PASSWORD)
                         server.sendmail(SENDER_EMAIL, RECEIVER_EMAIL, result.encode('utf-8'))
                         print("  --> Alert sent to " + RECEIVER_EMAIL)
+    return appointments_exist
 
 def selectVaccines():
     with open('vaccines.txt') as vaccines_txt:
@@ -119,9 +123,11 @@ def selectVaccines():
 
 # Go
 vaccines = selectVaccines()
+
 while True:
-    checkAppointments(vaccines)
-    print("Nächster Versuch in 5 Minuten")
-    if RETRY_SPAN==0:
-        continue
+    motives = checkAppointments(vaccines)
+    if RETRY_SPAN==0 or not motives:
+        print("---Keine weiteren Versuche.")
+        break
+    print(f"Nächster Versuch in {RETRY_SPAN} Sekunden")
     time.sleep(RETRY_SPAN)
