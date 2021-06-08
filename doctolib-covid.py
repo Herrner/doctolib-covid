@@ -1,21 +1,16 @@
 import os
 import datetime
 import time
-
+import beepy
 import click
 import requests
 import smtplib, ssl
-
+LOCATION = "hamburg"
 DISABLE_EMAIL = os.environ.get("ENABLE_EMAIL", True)
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
 SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD")
 RECEIVER_EMAIL = os.environ.get("RECEIVER_EMAIL")
 RETRY_SPAN = 300
-
-with open('centers.txt') as centers_txt:
-    centers = centers_txt.readlines()
-centers = [center.strip() for center in centers
-           if not center.startswith("#")]
 
 
 def checkVaccine(motive, vaccines):
@@ -32,7 +27,7 @@ def checkAppointments(vaccines):
         nb_availabilities = 0
         response = requests.get(f"https://www.doctolib.de/booking/{center}.json")
         data = response.json()["data"]
-        bookingurl =  (f"https://www.doctolib.de/booking/{center}")
+        bookingurl =  (f"https://www.doctolib.de/doctors/{center}/{LOCATION}")
         visit_motives = [visit_motive for visit_motive in data["visit_motives"]
                          if (visit_motive["name"].startswith("Erstimpfung")
                          or visit_motive["name"].startswith("Einzelimpfung"))
@@ -89,6 +84,7 @@ def checkAppointments(vaccines):
 # show availabilities
                 result = f"{str(nb_availabilities)} Termin(e) verfügbar bei {place_name}, {place_address}{os.linesep+bookingurl if nb_availabilities > 0 else ''}"
                 if (nb_availabilities>0):
+                    beepy(sound="ping")
                     click.echo(click.style(result, fg='green'))
                 else:
                     click.echo(result)
@@ -101,6 +97,7 @@ def checkAppointments(vaccines):
     return appointments_exist
 
 def selectVaccines():
+    click.echo(click.style("Wählen Sie den gewünschten Impfstoff (oder alle)",bold=True))
     with open('vaccines.txt') as vaccines_txt:
         vaccines = vaccines_txt.readlines()
     vaccines = [vaccine.strip().lower() for vaccine in vaccines]
@@ -122,9 +119,17 @@ def selectVaccines():
     return useVacs
 
 # Go
+
+
+with open('centers.txt') as centers_txt:
+    centers = centers_txt.readlines()
+centers = [center.strip() for center in centers
+           if not center.startswith("#")]
+
 vaccines = selectVaccines()
 
 while True:
+    click.echo(click.style(f"{datetime.datetime.now().strftime('%H:%M:%S')}: Suche nach Impfterminen mit {(', '.join(vaccines))}",fg='black',bg='yellow',bold=True))
     motives = checkAppointments(vaccines)
     if RETRY_SPAN==0 or not motives:
         print("---Keine weiteren Versuche.")
